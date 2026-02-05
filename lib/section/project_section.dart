@@ -75,7 +75,7 @@ class _ProjectSectionState extends State<ProjectSection>
     );
 
     // Create 4 staggered project animations
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < 5; i++) {
       final delay = i * 0.12; // Stagger delay
 
       _projectFadeAnimations.add(
@@ -219,6 +219,16 @@ class _ProjectSectionState extends State<ProjectSection>
                     description: 'PZE Rfid Application',
                     title: 'RFID',
                     bottonColor: AppColors.lightPink,
+                    imageFit: BoxFit.fitWidth,
+                  ),
+                ),
+                _buildAnimatedProject(
+                  index: 4,
+                  project: ProjectWidget(
+                    assetPath: 'assets/images/splash screen.jpeg',
+                    description: 'Call Recording Application',
+                    title: 'Android',
+                    bottonColor: AppColors.lightBlue,
                     imageFit: BoxFit.fitWidth,
                   ),
                 ),

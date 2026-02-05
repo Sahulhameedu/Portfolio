@@ -9,6 +9,7 @@ import 'package:portfolio/section/experience_section.dart';
 import 'package:portfolio/section/landing_section.dart';
 import 'package:portfolio/section/project_section.dart';
 import 'package:portfolio/section/skill_section.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 void main() {
   runApp(const MyApp());
@@ -35,10 +36,19 @@ class MainWidget extends StatelessWidget {
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            _buildMainContent(context),
+            ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 1400),
+              child: _buildMainContent(context),
+            ),
             const Divider(color: Colors.black, thickness: 2, height: 2),
-            _buildFooter(context),
+            ConstrainedBox(
+              constraints: BoxConstraints(maxWidth: 1400),
+              child: _buildFooter(context),
+            ),
           ],
         ),
       ),
@@ -46,6 +56,7 @@ class MainWidget extends StatelessWidget {
   }
 
   Widget _buildMainContent(BuildContext context) {
+    final GlobalKey contactKey = GlobalKey();
     return IntrinsicHeight(
       child: Row(
         children: [
@@ -59,11 +70,11 @@ class MainWidget extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const [
+                    children: [
                       SizedBox(height: 20),
                       Header(),
                       SizedBox(height: 80),
-                      LandingSection(),
+                      LandingSection(contactKey: contactKey),
                       SizedBox(height: 80),
                       SkillSection(),
                       SizedBox(height: 80),
@@ -71,7 +82,7 @@ class MainWidget extends StatelessWidget {
                       SizedBox(height: 80),
                       ExperienceSection(),
                       SizedBox(height: 80),
-                      ContactSection(),
+                      ContactSection(key: contactKey),
                       SizedBox(height: 20),
                     ],
                   ),
@@ -147,28 +158,53 @@ class Links extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Row(
+    return Row(
       spacing: 20,
       children: [
-        HighlightText(
-          'LinkedIn',
-          fontSize: 18,
-          height: 20,
-          fontWeight: FontWeight.w500,
-          fontFamily: AppConstants.handlee,
-          color: Colors.black,
-          textColor: Colors.white,
+        InkWell(
+          onTap: () {
+            _launchURL(url: 'https://github.com/Sahulhameedu/').catchError((
+              error,
+            ) {
+              debugPrint(error.toString());
+            });
+          },
+          child: HighlightText(
+            'LinkedIn',
+            fontSize: 18,
+            height: 20,
+            fontWeight: FontWeight.w500,
+            fontFamily: AppConstants.handlee,
+            color: Colors.black,
+            textColor: Colors.white,
+          ),
         ),
-        HighlightText(
-          'GitHub',
-          fontSize: 18,
-          height: 20,
-          fontWeight: FontWeight.w500,
-          fontFamily: AppConstants.handlee,
-          color: Colors.black,
-          textColor: Colors.white,
+        InkWell(
+          onTap: () {
+            _launchURL(
+              url: 'https://linkedin.com/in/sahulhameed-u-039b71274',
+            ).catchError((error) {
+              debugPrint(error.toString());
+            });
+          },
+          child: HighlightText(
+            'GitHub',
+            fontSize: 18,
+            height: 20,
+            fontWeight: FontWeight.w500,
+            fontFamily: AppConstants.handlee,
+            color: Colors.black,
+            textColor: Colors.white,
+          ),
         ),
       ],
     );
+  }
+}
+
+Future<void> _launchURL({required String url}) async {
+  final Uri uri = Uri.parse(url);
+  if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
+    throw Exception('Could not launch $url');
   }
 }

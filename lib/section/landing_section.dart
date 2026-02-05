@@ -9,7 +9,9 @@ import 'package:portfolio/helper/responsive.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
 class LandingSection extends StatelessWidget {
-  const LandingSection({super.key});
+  const LandingSection({super.key, required this.contactKey});
+
+  final Key contactKey;
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +21,7 @@ class LandingSection extends StatelessWidget {
         children: [
           LeftLandingSection(),
           SizedBox(height: 20),
-          RightLandingSection(),
+          RightLandingSection(contactKey: contactKey),
         ],
       );
     } else {
@@ -27,7 +29,7 @@ class LandingSection extends StatelessWidget {
         children: [
           Expanded(child: LeftLandingSection()),
           const SizedBox(width: 50),
-          Expanded(child: RightLandingSection()),
+          Expanded(child: RightLandingSection(contactKey: contactKey)),
         ],
       );
     }
@@ -35,7 +37,9 @@ class LandingSection extends StatelessWidget {
 }
 
 class RightLandingSection extends StatefulWidget {
-  const RightLandingSection({super.key});
+  const RightLandingSection({super.key, required this.contactKey});
+
+  final Key contactKey;
 
   @override
   State<RightLandingSection> createState() => _RightLandingSectionState();
@@ -102,7 +106,9 @@ class _RightLandingSectionState extends State<RightLandingSection>
                     fontWeight: FontWeight.w400,
                   ),
                 ),
-                SButton(text: 'Hire Me', onTap: () {}),
+                SButton(text: 'Hire Me', onTap: () {
+                  scrollToContact(widget.contactKey);
+                }),
               ],
             ),
           ),
@@ -282,6 +288,18 @@ class _ProfilePictureState extends State<ProfilePicture>
           ),
         ],
       ),
+    );
+  }
+}
+
+void scrollToContact(contactKey) {
+  final context = contactKey.currentContext;
+  if (context != null) {
+    Scrollable.ensureVisible(
+      context,
+      duration: const Duration(milliseconds: 700),
+      curve: Curves.easeInOut,
+      alignment: 0.1, // small top padding
     );
   }
 }
