@@ -37,6 +37,7 @@ dependencies:
   flutter_svg: ^2.2.3
   path_drawing: ^1.0.1
   visibility_detector: ^0.4.0+2
+  url_launcher: ^6.3.2
 
 dev_dependencies:
   flutter_test:

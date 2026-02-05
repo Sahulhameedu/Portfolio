@@ -13,22 +13,7 @@ class Header extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         // Logo
-        Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          spacing: 8,
-          children: [
-            SvgPicture.asset('assets/icons/logo.svg', width: 27, height: 27),
-            Text(
-              'SahulHameed',
-              style: TextStyle(
-                fontSize: 20,
-                fontFamily: AppConstants.handlee,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ],
-        ),
+        Logo(),
         // Navigation
         Row(
           spacing: 20,
@@ -46,6 +31,32 @@ class Header extends StatelessWidget {
               fontFamily: AppConstants.inter,
             ),
           ],
+        ),
+      ],
+    );
+  }
+}
+
+class Logo extends StatelessWidget {
+  const Logo({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      spacing: 8,
+      children: [
+        SvgPicture.asset('assets/icons/logo.svg', width: 27, height: 27),
+        Text(
+          'SahulHameed',
+          style: TextStyle(
+            fontSize: 20,
+            fontFamily: AppConstants.handlee,
+            fontWeight: FontWeight.w600,
+          ),
         ),
       ],
     );

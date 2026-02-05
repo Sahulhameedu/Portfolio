@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:portfolio/core/constants/app_constants.dart';
 
 class SButton extends StatelessWidget {
-  const SButton({super.key, required this.text});
+  const SButton({super.key, required this.text, required this.onTap});
   final String text;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +16,7 @@ class SButton extends StatelessWidget {
         backgroundColor: Colors.black,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(0)),
       ),
-      onPressed: () {},
+      onPressed: onTap,
       child: Text(
         text,
         style: const TextStyle(

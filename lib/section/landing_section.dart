@@ -2,11 +2,11 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:path_drawing/path_drawing.dart';
 import 'package:portfolio/common/widgets/button.dart';
 import 'package:portfolio/common/widgets/high_light_text.dart';
 import 'package:portfolio/core/constants/app_constants.dart';
 import 'package:portfolio/helper/responsive.dart';
+import 'package:visibility_detector/visibility_detector.dart';
 
 class LandingSection extends StatelessWidget {
   const LandingSection({super.key});
@@ -34,96 +34,126 @@ class LandingSection extends StatelessWidget {
   }
 }
 
-class RightLandingSection extends StatelessWidget {
+class RightLandingSection extends StatefulWidget {
   const RightLandingSection({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: context.isMobile ? 0 : 30),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        spacing: 15,
-        children: [
-          Text(
-            "I'll architect your application and develop robust backend systems using modern technologies.",
-            style: TextStyle(
-              height: 24 / 16,
-              fontSize: 18,
-              fontFamily: AppConstants.inter,
-              fontWeight: FontWeight.w400,
-            ),
-          ),
-          SButton(text: 'Hire Me'),
-        ],
-      ),
-    );
-  }
+  State<RightLandingSection> createState() => _RightLandingSectionState();
 }
 
-class LeftLandingSection extends StatelessWidget {
-  const LeftLandingSection({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        ProfilePicture(),
-        SizedBox(height: 30),
-        Text(
-          'I build scalable software solutions',
-          textAlign: TextAlign.start,
-          style: TextStyle(
-            height: 40 / 32,
-            fontSize: 32,
-            fontFamily: AppConstants.inter,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class ProfilePicture extends StatelessWidget {
-  const ProfilePicture({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      spacing: 10,
-      children: [
-        SvgPicture.asset('assets/images/profile.svg', width: 78, height: 78),
-        // SizedBox(height: 80, width: 80, child: AnimatedSvgPage()),
-        SvgPicture.asset('assets/icons/arrow.svg'),
-        Transform.rotate(
-          angle: -math.pi / 45,
-          child: HighlightText('Sahul\nhameed', height: 50),
-        ),
-      ],
-    );
-  }
-}
-
-class AnimatedSvgPage extends StatefulWidget {
-  const AnimatedSvgPage({super.key});
-
-  @override
-  State<AnimatedSvgPage> createState() => _AnimatedSvgPageState();
-}
-
-class _AnimatedSvgPageState extends State<AnimatedSvgPage>
+class _RightLandingSectionState extends State<RightLandingSection>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
+  late Animation<double> _fadeAnimation;
+  late Animation<Offset> _slideAnimation;
 
   @override
   void initState() {
     super.initState();
     _controller = AnimationController(
-      duration: const Duration(seconds: 3),
+      duration: const Duration(milliseconds: 800),
       vsync: this,
+    );
+
+    _fadeAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
+
+    _slideAnimation = Tween<Offset>(
+      begin: const Offset(0.3, 0),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return VisibilityDetector(
+      key: const Key('right-landing-section'),
+      onVisibilityChanged: (info) {
+        if (info.visibleFraction > 0.3) {
+          _controller.forward();
+        }
+      },
+      child: FadeTransition(
+        opacity: _fadeAnimation,
+        child: SlideTransition(
+          position: _slideAnimation,
+          child: Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: context.isMobile ? 0 : 30,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              spacing: 15,
+              children: [
+                Text(
+                  "I'll architect your application and develop robust backend systems using modern technologies.",
+                  style: TextStyle(
+                    height: 24 / 16,
+                    fontSize: 18,
+                    fontFamily: AppConstants.inter,
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+                SButton(text: 'Hire Me', onTap: () {}),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class LeftLandingSection extends StatefulWidget {
+  const LeftLandingSection({super.key});
+
+  @override
+  State<LeftLandingSection> createState() => _LeftLandingSectionState();
+}
+
+class _LeftLandingSectionState extends State<LeftLandingSection>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _fadeAnimation;
+  late Animation<Offset> _slideAnimation;
+  late Animation<double> _scaleAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 1000),
+      vsync: this,
+    );
+
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0.0, 0.6, curve: Curves.easeOut),
+      ),
+    );
+
+    _slideAnimation =
+        Tween<Offset>(begin: const Offset(-0.3, 0), end: Offset.zero).animate(
+          CurvedAnimation(
+            parent: _controller,
+            curve: const Interval(0.0, 0.6, curve: Curves.easeOut),
+          ),
+        );
+
+    _scaleAnimation = Tween<double>(begin: 0.8, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0.3, 1.0, curve: Curves.elasticOut),
+      ),
     );
   }
 
@@ -135,150 +165,123 @@ class _AnimatedSvgPageState extends State<AnimatedSvgPage>
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _controller,
-      builder: (context, child) {
-        return CustomPaint(
-          size: const Size(78, 78),
-          painter: AnimatedSvgPainter(progress: _controller.value),
-        );
+    return VisibilityDetector(
+      key: const Key('left-landing-section'),
+      onVisibilityChanged: (info) {
+        if (info.visibleFraction > 0.3) {
+          _controller.forward();
+        }
       },
+      child: FadeTransition(
+        opacity: _fadeAnimation,
+        child: SlideTransition(
+          position: _slideAnimation,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ScaleTransition(scale: _scaleAnimation, child: ProfilePicture()),
+              SizedBox(height: 30),
+              Text(
+                'I build scalable software solutions',
+                textAlign: TextAlign.start,
+                style: TextStyle(
+                  height: 40 / 32,
+                  fontSize: 32,
+                  fontFamily: AppConstants.inter,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
 
-class AnimatedSvgPainter extends CustomPainter {
-  final double progress;
-
-  AnimatedSvgPainter({required this.progress});
+class ProfilePicture extends StatefulWidget {
+  const ProfilePicture({super.key});
 
   @override
-  void paint(Canvas canvas, Size size) {
-    // Scale factor to fit the SVG (1300x1300) into the canvas size
-    final scale = size.width / 1300;
-    canvas.scale(scale);
+  State<ProfilePicture> createState() => _ProfilePictureState();
+}
 
-    // Draw the filled shapes first (they appear immediately)
-    _drawFilledShapes(canvas, progress);
+class _ProfilePictureState extends State<ProfilePicture>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _bounceAnimation;
+  late Animation<double> _rotateAnimation;
 
-    // Then draw the stroked paths with animation
-    _drawAnimatedPaths(canvas, progress);
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 1500),
+      vsync: this,
+    );
+
+    _bounceAnimation = TweenSequence<double>([
+      TweenSequenceItem(tween: Tween(begin: 0.0, end: -10.0), weight: 25),
+      TweenSequenceItem(tween: Tween(begin: -10.0, end: 0.0), weight: 25),
+      TweenSequenceItem(tween: Tween(begin: 0.0, end: -5.0), weight: 25),
+      TweenSequenceItem(tween: Tween(begin: -5.0, end: 0.0), weight: 25),
+    ]).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
+
+    _rotateAnimation = Tween<double>(
+      begin: -0.1,
+      end: 0.1,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
   }
 
-  void _drawFilledShapes(Canvas canvas, double progress) {
-    // Only show filled shapes after a certain progress to create layered effect
-    if (progress < 0.1) return;
-
-    // White filled shapes
-    final whiteFill = Paint()
-      ..color = Colors.white.withOpacity((progress - 0.1) * 1.5)
-      ..style = PaintingStyle.fill;
-
-    // Path 1: Large bottom white shape
-    final path1 = parseSvgPathData(
-      'M1003.04 1182.75C1000.07 1184.87 996.668 1186.99 993.694 1189.12C990.295 1191.24 987.321 1193.37 983.923 1195.07C980.949 1196.76 978.4 1198.46 975.426 1200.16C975.001 1200.59 974.576 1200.59 974.151 1201.01C964.38 1206.96 954.184 1212.48 943.988 1217.58C941.014 1219.28 937.615 1220.98 934.641 1222.26C934.641 1222.26 934.217 1222.68 933.792 1222.68C930.393 1224.38 926.994 1226.08 923.596 1227.78C916.798 1231.18 909.576 1234.15 902.779 1237.12C899.38 1238.82 895.556 1240.1 892.158 1241.37C888.759 1242.65 884.936 1244.35 881.537 1245.62C878.138 1246.9 874.315 1248.59 870.916 1249.87C870.916 1249.87 870.916 1249.87 870.491 1249.87C867.092 1251.14 863.269 1252.42 859.87 1253.69C852.223 1256.24 844.151 1258.79 836.504 1261.34C833.955 1262.19 830.981 1263.04 828.432 1263.89C820.36 1266.44 812.289 1268.56 804.217 1270.26C801.243 1271.11 798.269 1271.54 794.87 1272.39C787.223 1274.09 779.151 1275.78 771.504 1277.48C769.805 1277.91 768.53 1277.91 766.831 1278.33C764.282 1278.76 761.308 1279.18 758.759 1279.61C754.936 1280.03 751.537 1280.88 747.713 1281.31C746.014 1281.73 744.315 1281.73 742.615 1282.16C740.491 1282.58 737.942 1283.01 735.393 1283.01C728.596 1283.86 721.373 1284.71 714.576 1285.56C712.452 1285.98 709.903 1285.98 707.779 1286.41H707.354C704.38 1286.83 701.406 1286.83 698.432 1287.25C695.458 1287.68 692.485 1287.68 689.511 1287.68C687.811 1287.68 685.687 1288.1 683.988 1288.1C680.589 1288.1 677.615 1288.53 674.642 1288.53C670.393 1288.53 666.57 1288.95 662.321 1288.95C658.073 1288.95 654.249 1288.95 650.001 1288.95C647.027 1288.95 644.053 1288.95 641.079 1288.95C461.798 1286.41 300.785 1210.36 185.655 1089.71C185.655 1089.71 185.655 1089.28 185.23 1089.28C172.485 1077.81 183.53 1016.63 234.936 977.974C299.511 929.118 454.151 898.53 454.151 898.53C454.151 898.53 514.053 888.758 736.243 935.066C866.243 962.255 965.23 1001.76 1020.46 1108.82C1031.93 1130.92 1043.4 1164.9 1003.04 1182.75Z',
-    );
-    canvas.drawPath(path1, whiteFill);
-
-    // Path 2: Upper right white shape
-    final path2 = parseSvgPathData(
-      'M1151.31 1447.84L75.1973 1424.05C141.472 1202.71 178.433 1007.71 228.138 977.974C322.452 921.47 407.419 912.549 457.975 907.875C470.72 939.313 519.151 1042.55 619.838 1083.33C717.125 1122.84 774.903 1096.5 783.825 1052.74C789.348 1024.71 771.929 978.823 763.008 963.954C757.91 959.706 754.511 953.333 752.812 946.96L749.413 932.941C756.635 931.242 763.857 929.542 771.08 926.993C848.4 940.588 965.655 1004.31 990.72 1040C1020.88 1082.91 1062.52 1190.39 1060.82 1249.44C1058.27 1345.46 1151.31 1447.84 1151.31 1447.84Z',
-    );
-    canvas.drawPath(path2, whiteFill);
-
-    // Path 3: Upper left white shape
-    final path3 = parseSvgPathData(
-      'M389.153 1339.08V1288.53L511.081 1338.24C510.657 1338.24 412.519 1340.78 389.153 1339.08Z',
-    );
-    canvas.drawPath(path3, whiteFill);
-
-    // Path 4: Left hand area
-    final path4 = parseSvgPathData(
-      'M440.555 867.091C440.98 866.667 441.405 866.242 441.829 865.817C446.503 860.294 453.3 856.895 460.947 856.046C496.633 851.797 500.457 855.621 508.104 867.516C545.065 925.294 593.071 1035.75 710.751 1073.14L597.32 1188.69C591.372 1196.34 580.751 1197.61 573.104 1192.09C536.568 1164.9 463.496 1081.63 423.137 980.098C414.64 958.856 412.94 935.49 417.189 913.399C416.339 912.549 433.333 877.287 440.555 867.091Z',
-    );
-    canvas.drawPath(path4, whiteFill);
-
-    // Path 5: Right hand area
-    final path5 = parseSvgPathData(
-      'M829.28 1146.63C826.731 1160.65 816.535 1173.82 799.542 1156.41L709.901 1072.71C709.901 1072.71 762.156 1023.01 749.411 932.942C766.829 929.119 783.398 923.596 798.692 916.374C799.117 917.223 805.065 928.694 811.862 947.811C826.307 987.321 844.575 1059.97 829.28 1146.63Z',
-    );
-    canvas.drawPath(path5, whiteFill);
-
-    // Path 6: Face/head area
-    final path6 = parseSvgPathData(
-      'M777.448 1043.4C768.526 1087.16 710.748 1113.5 613.461 1073.99C512.35 1033.2 468.592 935.915 457.546 907.026C517.448 794.869 475.814 717.124 475.814 717.124C613.886 705.229 734.539 866.667 734.539 866.667L753.232 946.536C754.932 953.333 758.33 959.281 763.428 963.529C772.35 979.248 782.971 1015.36 777.448 1043.4Z',
-    );
-    canvas.drawPath(path6, whiteFill);
-
-    // Path 7: Main head shape
-    final path7 = parseSvgPathData(
-      'M930.816 452.026C938.463 487.712 912.973 525.948 912.973 621.111C912.973 718.399 895.129 824.183 821.633 897.68C758.332 960.98 685.685 958.431 600.293 891.732C588.397 882.386 546.763 850.948 536.142 840.327C523.822 828.007 517.025 819.085 511.077 809.739C505.979 801.242 507.254 751.961 500.031 740.49C481.339 709.477 477.515 743.039 453.299 715.85C419.737 679.314 379.378 605.817 399.345 475.817C431.633 265.098 598.593 240.458 722.221 263.824C846.698 287.614 910.424 358.137 930.816 452.026Z',
-    );
-    canvas.drawPath(path7, whiteFill);
-
-    // Face features - white fill
-    final path8 = parseSvgPathData(
-      'M524.672 618.562C524.672 618.562 511.502 554.837 449.476 562.484C395.946 569.281 377.254 697.582 498.757 733.268',
-    );
-    canvas.drawPath(path8, whiteFill);
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
-  void _drawAnimatedPaths(Canvas canvas, double progress) {
-    final blackStroke = Paint()
-      ..color = Colors.black
-      ..strokeWidth = 5.0
-      ..style = PaintingStyle.stroke
-      ..strokeCap = StrokeCap.round
-      ..strokeJoin = StrokeJoin.round;
-
-    // List of all the black outline paths from the SVG
-    final pathDataList = [
-      // Outer circle/outline
-      'M1224.38 358.137C1482.25 854.771 1028.95 1415.13 488.562 1278.33C245.98 1218.01 50.9803 1007.71 10.6208 760.882C-35.2615 515.327 75.6208 251.503 282.941 112.582C567.157 -82.8433 960.98 -17.8433 1164.48 261.699C1165.75 262.974 1165.33 265.098 1163.63 266.372C1162.35 267.647 1160.23 267.222 1158.95 265.523C1130.91 229.412 1099.05 196.699 1064.22 167.385C1006.86 118.529 939.738 80.2939 868.791 54.3789C507.68 -76.4708 111.307 141.046 32.2875 518.725C-56.9282 941.863 302.908 1331.44 731.993 1273.24C1062.94 1231.6 1308.92 926.144 1281.73 593.921C1275.78 513.627 1254.54 434.183 1219.28 361.111C1218.43 359.836 1219.28 358.137 1220.56 357.287C1221.83 356.438 1223.53 356.863 1224.38 358.137Z',
-      // Head outline
-      'M474.541 753.66C464.77 737.516 452.449 723.072 440.979 708.202C429.508 692.484 420.162 675.915 412.515 658.072C369.181 553.137 375.554 415.915 452.449 327.549C505.129 267.222 588.397 247.255 664.868 251.503C741.338 256.176 820.783 275.719 877.286 330.948C909.998 362.81 930.815 405.294 940.162 449.477C943.136 463.497 941.011 478.791 937.613 491.961C927.842 528.921 918.495 564.183 917.645 602.418C918.07 659.346 916.371 717.549 899.802 772.353C887.907 808.889 873.887 845.425 851.796 877.287C828.855 909.575 794.443 935.49 754.933 943.137C675.489 959.281 601.142 909.15 548.462 854.771C546.338 852.222 549.312 849.248 551.861 850.948C582.024 873.889 613.038 895.131 646.6 909.575C743.462 954.183 823.757 912.974 866.24 819.51C901.926 751.536 912.123 678.039 909.149 601.993C909.149 582.876 909.998 563.758 912.547 544.64C915.096 517.026 924.443 489.412 924.018 462.222C916.796 418.039 896.404 375.555 865.815 342.843C793.168 265.948 653.822 243.431 556.109 278.268C440.979 319.052 409.966 435.033 403.593 545.915C399.345 612.189 418.887 677.189 469.018 722.647L488.985 743.464C495.783 752.81 481.338 763.856 474.541 753.66Z',
-      // Hair detail
-      'M729.021 232.811C538.695 214.543 475.394 278.268 450.329 300.785C415.067 331.798 361.538 454.575 363.662 524.673C366.211 622.386 444.381 725.621 447.78 730.719C465.198 756.634 483.041 772.353 487.714 777.876C485.165 768.53 480.917 734.968 484.74 729.02C378.531 688.236 397.649 569.706 449.479 562.909C503.858 556.111 520.851 604.543 523.825 616.438C523.825 616.438 523.825 617.713 524.25 619.837C524.675 619.837 525.1 620.262 525.525 620.262C544.217 626.634 561.636 607.941 555.263 589.673C545.492 562.909 534.446 531.896 532.747 511.928C530.198 454.151 553.564 388.301 725.623 397.647C747.714 398.922 766.832 402.321 785.525 406.144C794.871 408.693 819.936 418.464 811.44 442.68C803.368 466.046 786.799 446.928 782.126 449.053C779.577 450.327 795.721 471.994 819.512 467.745C839.054 464.347 854.773 444.379 847.976 418.039C854.773 418.889 861.995 419.739 869.217 420.588C915.1 423.987 956.309 388.301 955.034 342.419C953.76 295.687 910.002 250.229 729.021 232.811Z',
-      // Eyes
-      'M737.09 528.497C746.436 529.771 753.658 520 750.26 510.654C748.56 505.556 745.586 500.883 740.913 497.909C726.469 488.987 672.514 488.137 644.05 508.53C618.56 527.222 694.606 522.549 737.09 528.497Z',
-      'M854.769 533.17C847.122 533.17 842.449 523.399 846.273 515.327C848.397 511.079 851.371 507.255 855.619 505.131C868.789 498.758 904.05 502.582 919.769 524.249C933.789 543.366 890.031 532.745 854.769 533.17Z',
-      // Mouth
-      'M723.072 584.575C708.203 597.745 685.261 597.745 667.418 590.948C664.444 589.673 647.451 582.026 650.85 577.778C651.274 577.353 652.124 576.928 652.549 576.928C664.444 577.353 675.49 578.628 686.961 579.477C698.431 580.327 708.627 579.902 720.523 579.477C723.497 579.477 725.196 582.876 723.072 584.575Z',
-      'M890.88 591.798C877.285 607.517 849.671 605.392 836.926 590.098C835.651 588.824 836.926 586.275 838.625 586.7C843.298 587.124 847.547 587.974 851.795 588.399C864.54 590.523 875.161 590.098 888.756 589.673C890.88 588.824 891.73 590.948 890.88 591.798Z',
-      // Body contours
-      'M737.517 930.392C819.086 946.961 906.177 964.804 973.301 1018.76C995.818 1037.03 1010.69 1063.79 1023.01 1089.71C1028.96 1102.45 1034.9 1115.62 1039.58 1129.64C1042.12 1138.99 1045.95 1149.61 1043.82 1160.65C1043.4 1163.63 1040.85 1167.45 1038.73 1169.58C1028.96 1179.35 1018.33 1185.29 1007.71 1192.94C945.262 1236.27 873.465 1266.86 799.118 1283.01C633.432 1319.12 454.151 1291.08 308.432 1203.99C260.001 1174.67 215.393 1138.99 177.158 1096.93C172.909 1091.83 172.909 1083.33 172.909 1077.81C173.334 1065.07 176.733 1052.75 180.981 1041.27C191.177 1014.93 204.347 988.595 226.863 970.327C243.007 959.281 260.426 949.935 278.269 942.288C334.347 918.497 393.399 901.928 454.151 895.131C459.249 894.706 460.099 901.928 455.001 902.778C396.798 914.673 339.02 932.516 285.066 956.732C265.524 966.503 244.707 975 228.988 990.294C214.118 1006.44 203.497 1026.41 195.001 1046.8C189.478 1059.12 185.654 1078.66 187.354 1088.43C214.118 1120.29 245.556 1148.33 279.543 1172.55C465.622 1302.55 748.138 1311.05 946.112 1202.71C963.955 1192.94 981.373 1181.9 997.942 1170.42C1006.01 1164.9 1014.51 1160.23 1020.88 1153.86C1021.31 1153.43 1020.88 1153.86 1020.88 1154.28C1020.88 1154.71 1020.46 1155.13 1020.46 1155.13C1020.88 1150.03 1019.18 1143.24 1017.06 1136.44C1009.41 1111.8 997.092 1085.88 983.922 1063.37C963.105 1029.8 927.844 1008.56 892.158 991.569C867.517 980.098 841.602 971.177 815.262 962.68C788.922 954.183 762.158 946.961 735.393 940.588C728.596 938.889 730.72 929.118 737.517 930.392Z',
-      'M1161.5 1452.52C841.177 1447.84 390.851 1443.17 75.1971 1435.1C69.2494 1435.1 64.5762 1430 64.5762 1424.05C98.9879 1308.07 126.602 1191.24 163.563 1075.69C168.236 1061.24 173.334 1047.22 179.282 1032.78C189.478 1010.26 199.674 985.196 220.916 969.902C233.236 962.68 246.406 955.457 259.151 949.085C320.753 918.497 389.151 902.778 457.125 897.255C462.223 896.83 466.472 899.804 468.171 904.052C500.458 981.372 559.086 1053.17 641.079 1079.93C681.439 1093.95 753.236 1105.85 772.354 1055.72C778.727 1031.5 769.38 1006.01 760.883 983.072C758.759 978.398 756.635 973.725 754.511 969.902L756.635 972.451C748.563 965.653 743.465 954.183 741.766 943.987L739.642 935.49C738.367 929.542 742.191 923.595 748.138 922.32C755.36 920.621 762.158 918.921 768.955 916.797C828.432 921.046 950.36 981.372 992.419 1023.86C1017.06 1052.32 1031.08 1089.28 1045.1 1123.69C1055.3 1151.31 1064.22 1179.77 1069.31 1209.08C1071.44 1220.13 1072.71 1231.6 1072.71 1243.07C1072.29 1260.07 1073.56 1277.48 1078.24 1294.48C1092.26 1347.58 1123.27 1396.44 1158.53 1438.5L1159.38 1439.35L1159.8 1439.77C1159.8 1439.77 1159.38 1439.35 1161.08 1441.05C1162.35 1444.44 1162.78 1449.54 1161.5 1452.52ZM1141.54 1443.59C1141.11 1444.87 1140.26 1446.57 1140.69 1448.69C1140.69 1450.82 1141.54 1452.52 1142.39 1453.79C1143.66 1455.49 1143.24 1454.64 1143.24 1455.07L1142.81 1454.64C1139.84 1450.39 1133.89 1441.9 1130.92 1437.22C1096.08 1382.42 1061.67 1321.67 1060.39 1254.97C1061.24 1211.21 1047.65 1169.15 1033.2 1128.79C1023.01 1101.6 1011.11 1075.26 995.818 1050.62C991.994 1044.67 988.171 1038.73 983.073 1033.63C967.779 1018.76 949.086 1006.86 930.393 996.242C880.687 968.627 826.733 945.686 770.23 938.464L775.328 938.039C767.681 940.588 760.034 942.287 752.387 943.987L760.883 930.817C763.432 939.738 763.857 950.359 771.079 956.307C775.753 961.83 778.302 969.052 781.276 975C788.073 991.144 792.746 1007.71 795.72 1025.13C803.367 1066.76 778.727 1101.18 737.942 1110.52C703.53 1118.59 667.419 1111.37 634.707 1100.75C546.766 1072.71 483.04 995.817 448.628 912.549L459.674 919.346C392.55 918.497 325.851 931.667 265.099 960.555C251.929 966.928 238.334 974.15 226.014 981.797C208.596 995.817 200.099 1017.91 191.177 1037.88C163.563 1107.55 147.419 1180.62 129.151 1252.84C116.406 1303.82 99.4128 1376.05 86.6677 1427.45L76.4716 1413.43C384.053 1419.8 828.857 1433.4 1141.54 1443.59Z',
-    ];
-
-    // Draw each path with progressive animation
-    for (int i = 0; i < pathDataList.length; i++) {
-      // Calculate when this path should start animating
-      final pathStartProgress = i / pathDataList.length;
-      final pathEndProgress = (i + 1) / pathDataList.length;
-
-      if (progress >= pathStartProgress) {
-        final path = parseSvgPathData(pathDataList[i]);
-        final pathMetrics = path.computeMetrics();
-
-        for (final metric in pathMetrics) {
-          // Calculate progress for this specific path
-          final pathProgress =
-              ((progress - pathStartProgress) /
-                      (pathEndProgress - pathStartProgress))
-                  .clamp(0.0, 1.0);
-
-          final length = metric.length;
-          final extractLength = length * pathProgress;
-          final extractedPath = metric.extractPath(0, extractLength);
-
-          canvas.drawPath(extractedPath, blackStroke);
+  @override
+  Widget build(BuildContext context) {
+    return VisibilityDetector(
+      key: const Key('profile-picture'),
+      onVisibilityChanged: (info) {
+        if (info.visibleFraction > 0.5) {
+          _controller.forward();
         }
-      }
-    }
-  }
-
-  @override
-  bool shouldRepaint(AnimatedSvgPainter oldDelegate) {
-    return oldDelegate.progress != progress;
+      },
+      child: Row(
+        spacing: 10,
+        children: [
+          AnimatedBuilder(
+            animation: _controller,
+            builder: (context, child) {
+              return Transform.translate(
+                offset: Offset(0, _bounceAnimation.value),
+                child: child,
+              );
+            },
+            child: SvgPicture.asset(
+              'assets/images/profile.svg',
+              width: 78,
+              height: 78,
+            ),
+          ),
+          AnimatedBuilder(
+            animation: _controller,
+            builder: (context, child) {
+              return Transform.rotate(
+                angle: _rotateAnimation.value,
+                child: child,
+              );
+            },
+            child: SvgPicture.asset('assets/icons/arrow.svg'),
+          ),
+          Transform.rotate(
+            angle: -math.pi / 45,
+            child: HighlightText('Sahul\nhameed', height: 50),
+          ),
+        ],
+      ),
+    );
   }
 }

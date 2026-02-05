@@ -10,6 +10,7 @@ class HighlightText extends StatelessWidget {
   final FontWeight fontWeight;
   final Color color;
   final bool isShowBorder;
+  final Color textColor;
 
   const HighlightText(
     this.text, {
@@ -20,6 +21,7 @@ class HighlightText extends StatelessWidget {
     this.fontWeight = FontWeight.w600,
     this.color = AppColors.pink,
     this.isShowBorder = false,
+    this.textColor = Colors.black,
   });
 
   @override
@@ -49,7 +51,7 @@ class HighlightText extends StatelessWidget {
             fontFamily: fontFamily,
             fontSize: fontSize,
             fontWeight: fontWeight,
-            color: Colors.black,
+            color: textColor,
           ),
         ),
       ],
