@@ -7,6 +7,8 @@ class EmailSender {
     // final emailTemplateId = dotenv.env['EMAIL_TEMPLATE_ID']!;
     const emailSeriveId = String.fromEnvironment('EMAIL_SERVICE_ID');
     const emailTemplateId = String.fromEnvironment('EMAIL_TEMPLATE_ID');
+    print('Email Service Id: $emailSeriveId');
+    print('Email Template Id: $emailTemplateId');
     await emailjs.send(emailSeriveId, emailTemplateId, data);
   }
 }
