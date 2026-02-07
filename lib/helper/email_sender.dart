@@ -5,8 +5,14 @@ class EmailSender {
     // print(dotenv.env);
     // final emailSeriveId = dotenv.env['EMAIL_SERVICE_ID']!;
     // final emailTemplateId = dotenv.env['EMAIL_TEMPLATE_ID']!;
-    const emailSeriveId = String.fromEnvironment('EMAIL_SERVICE_ID');
-    const emailTemplateId = String.fromEnvironment('EMAIL_TEMPLATE_ID');
+    const emailSeriveId = String.fromEnvironment(
+      'EMAIL_SERVICE_ID',
+      defaultValue: 'test',
+    );
+    const emailTemplateId = String.fromEnvironment(
+      'EMAIL_TEMPLATE_ID',
+      defaultValue: 'test_temp',
+    );
     print('Email Service Id: $emailSeriveId');
     print('Email Template Id: $emailTemplateId');
     await emailjs.send(emailSeriveId, emailTemplateId, data);
