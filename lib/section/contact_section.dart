@@ -292,7 +292,7 @@ Future<void> sendEmail({
 }) async {
   final Uri uri = Uri(
     scheme: 'mailto',
-    path: 'luhas046@gmail.com',
+    path: 'hameedsahul046@gmail.com',
     query: Uri.encodeFull(
       'subject=Portfolio Contact from $name'
       '&body=Name: $name\nEmail: $email\nMessage:\n$message',

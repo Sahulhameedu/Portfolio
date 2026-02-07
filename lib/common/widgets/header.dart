@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:portfolio/common/widgets/high_light_text.dart';
 import 'package:portfolio/core/constants/app_constants.dart';
+import 'package:portfolio/main.dart';
 
 class Header extends StatelessWidget {
   const Header({super.key});
@@ -18,19 +19,7 @@ class Header extends StatelessWidget {
         Row(
           spacing: 20,
           mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            Text(
-              "Portfolio",
-              style: TextStyle(fontSize: 16, fontFamily: AppConstants.inter),
-            ),
-            HighlightText(
-              "Hire Me",
-              fontSize: 18,
-              height: 5,
-              fontWeight: FontWeight.w500,
-              fontFamily: AppConstants.inter,
-            ),
-          ],
+          children: [LinkedInButton(), GithubButton()],
         ),
       ],
     );
@@ -38,9 +27,7 @@ class Header extends StatelessWidget {
 }
 
 class Logo extends StatelessWidget {
-  const Logo({
-    super.key,
-  });
+  const Logo({super.key});
 
   @override
   Widget build(BuildContext context) {

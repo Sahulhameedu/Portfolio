@@ -50,6 +50,7 @@ flutter:
   assets:
     - assets/icons/
     - assets/images/
+    - assets/cv/Sahulhameed_Full_Stack_Developer_Role.pdf
 
   fonts:
     - family: Handlee

@@ -4,12 +4,12 @@ import 'package:portfolio/common/widgets/header.dart';
 import 'package:portfolio/common/widgets/high_light_text.dart';
 import 'package:portfolio/core/constants/app_constants.dart';
 import 'package:portfolio/helper/responsive.dart';
+import 'package:portfolio/helper/url_opener.dart';
 import 'package:portfolio/section/contact_section.dart';
 import 'package:portfolio/section/experience_section.dart';
 import 'package:portfolio/section/landing_section.dart';
 import 'package:portfolio/section/project_section.dart';
 import 'package:portfolio/section/skill_section.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 void main() {
   runApp(const MyApp());
@@ -158,36 +158,28 @@ class Links extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      spacing: 20,
-      children: [
-        InkWell(
-          onTap: () {
-            _launchURL(url: 'https://github.com/Sahulhameedu/').catchError((
-              error,
-            ) {
-              debugPrint(error.toString());
-            });
-          },
-          child: HighlightText(
-            'LinkedIn',
-            fontSize: 18,
-            height: 20,
-            fontWeight: FontWeight.w500,
-            fontFamily: AppConstants.handlee,
-            color: Colors.black,
-            textColor: Colors.white,
-          ),
-        ),
-        InkWell(
-          onTap: () {
-            _launchURL(
-              url: 'https://linkedin.com/in/sahulhameed-u-039b71274',
-            ).catchError((error) {
-              debugPrint(error.toString());
-            });
-          },
-          child: HighlightText(
+    return Row(spacing: 20, children: [LinkedInButton(), GithubButton()]);
+  }
+}
+
+class GithubButton extends StatelessWidget {
+  const GithubButton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: () {
+        UrlOpenHelper.openUrl(
+          url: 'https://github.com/Sahulhameedu/',
+        ).catchError((error) {});
+      },
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Image.asset('assets/icons/github.png', width: 25, height: 25),
+          HighlightText(
             'GitHub',
             fontSize: 18,
             height: 20,
@@ -196,15 +188,40 @@ class Links extends StatelessWidget {
             color: Colors.black,
             textColor: Colors.white,
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
 
-Future<void> _launchURL({required String url}) async {
-  final Uri uri = Uri.parse(url);
-  if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
-    throw Exception('Could not launch $url');
+class LinkedInButton extends StatelessWidget {
+  const LinkedInButton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: () {
+        UrlOpenHelper.openUrl(
+          url: 'https://www.linkedin.com/in/sahulhameed-u-039b71274/',
+        ).catchError((error) {});
+      },
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Image.asset('assets/icons/linkedin.png', width: 25, height: 25),
+          HighlightText(
+            'LinkedIn',
+            fontSize: 18,
+            height: 20,
+            fontWeight: FontWeight.w500,
+            fontFamily: AppConstants.handlee,
+            color: Colors.black,
+            textColor: Colors.white,
+          ),
+        ],
+      ),
+    );
   }
 }
