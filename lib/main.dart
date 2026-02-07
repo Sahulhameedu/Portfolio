@@ -10,6 +10,7 @@ import 'package:portfolio/section/experience_section.dart';
 import 'package:portfolio/section/landing_section.dart';
 import 'package:portfolio/section/project_section.dart';
 import 'package:portfolio/section/skill_section.dart';
+import 'package:portfolio/section/tool_section.dart';
 
 void main() {
   runApp(const MyApp());
@@ -75,6 +76,8 @@ class MainWidget extends StatelessWidget {
                       Header(),
                       SizedBox(height: 80),
                       LandingSection(contactKey: contactKey),
+                      SizedBox(height: 80),
+                      ToolSection(),
                       SizedBox(height: 80),
                       SkillSection(),
                       SizedBox(height: 80),

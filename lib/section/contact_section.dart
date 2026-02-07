@@ -50,6 +50,8 @@ class _ContactDetailsState extends State<ContactDetails>
   final nameController = TextEditingController();
   final emailController = TextEditingController();
   final projectController = TextEditingController();
+  String? nameError;
+  String? emailError;
 
   @override
   void initState() {
@@ -117,21 +119,55 @@ class _ContactDetailsState extends State<ContactDetails>
           children: [
             _buildAnimatedField(
               index: 0,
-              child: LabeledUnderlineTextField(
-                controller: nameController,
-                hint: '',
-                label: 'Name',
-                labelColor: AppColors.lightPink,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  LabeledUnderlineTextField(
+                    controller: nameController,
+                    hint: '',
+                    label: 'Name',
+                    labelColor: AppColors.lightPink,
+                  ),
+                  if (nameError != null)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8.0, left: 75),
+                      child: Text(
+                        nameError!,
+                        style: const TextStyle(
+                          color: Colors.red,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                ],
               ),
             ),
             SizedBox(height: 20),
             _buildAnimatedField(
               index: 1,
-              child: LabeledUnderlineTextField(
-                controller: emailController,
-                hint: '',
-                label: 'Your Email',
-                labelColor: AppColors.lightOrange,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  LabeledUnderlineTextField(
+                    controller: emailController,
+                    hint: '',
+                    label: 'Your Email',
+                    labelColor: AppColors.lightOrange,
+                  ),
+                  if (emailError != null)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8.0, left: 75),
+                      child: Text(
+                        emailError!,
+                        style: const TextStyle(
+                          color: Colors.red,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                ],
               ),
             ),
             SizedBox(height: 20),
@@ -150,11 +186,13 @@ class _ContactDetailsState extends State<ContactDetails>
               child: SButton(
                 text: 'Send Here',
                 onTap: () {
-                  sendEmail(
-                    name: emailController.text,
-                    email: emailController.text,
-                    message: projectController.text,
-                  );
+                  if (_validateForm()) {
+                    sendEmail(
+                      name: nameController.text,
+                      email: emailController.text,
+                      message: projectController.text,
+                    );
+                  }
                 },
               ),
             ),
@@ -163,6 +201,49 @@ class _ContactDetailsState extends State<ContactDetails>
         ),
       ),
     );
+  }
+
+  bool _validateForm() {
+    bool isValid = true;
+    setState(() {
+      nameError = null;
+      emailError = null;
+    });
+
+    // Validate name
+    if (nameController.text.trim().isEmpty) {
+      setState(() {
+        nameError = 'Name is required';
+      });
+      isValid = false;
+    } else if (nameController.text.trim().length < 2) {
+      setState(() {
+        nameError = 'Name must be at least 2 characters';
+      });
+      isValid = false;
+    }
+
+    // Validate email
+    if (emailController.text.trim().isEmpty) {
+      setState(() {
+        emailError = 'Email is required';
+      });
+      isValid = false;
+    } else if (!_isValidEmail(emailController.text.trim())) {
+      setState(() {
+        emailError = 'Please enter a valid email';
+      });
+      isValid = false;
+    }
+
+    return isValid;
+  }
+
+  bool _isValidEmail(String email) {
+    final emailRegex = RegExp(
+      r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
+    );
+    return emailRegex.hasMatch(email);
   }
 
   Widget _buildAnimatedField({required int index, required Widget child}) {

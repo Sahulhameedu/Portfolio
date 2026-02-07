@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:portfolio/common/widgets/high_light_text.dart';
 import 'package:portfolio/core/constants/app_constants.dart';
+import 'package:portfolio/helper/responsive.dart';
 import 'package:portfolio/main.dart';
 
 class Header extends StatelessWidget {
@@ -9,20 +10,35 @@ class Header extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        // Logo
-        Logo(),
-        // Navigation
-        Row(
-          spacing: 20,
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [LinkedInButton(), GithubButton()],
-        ),
-      ],
-    );
+    return context.isDesktop || context.isTablet
+        ? Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              // Logo
+              Logo(),
+              // Navigation
+              Row(
+                spacing: 20,
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [LinkedInButton(), GithubButton()],
+              ),
+            ],
+          )
+        : Column(
+            spacing: 25,
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Logo(),
+              Row(
+                spacing: 20,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [LinkedInButton(), GithubButton()],
+              ),
+            ],
+          );
   }
 }
 

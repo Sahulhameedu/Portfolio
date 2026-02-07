@@ -108,8 +108,9 @@ class _RightLandingSectionState extends State<RightLandingSection>
                     fontWeight: FontWeight.w400,
                   ),
                 ),
-                Row(
+                Wrap(
                   spacing: 20,
+                  runSpacing: 20,
                   children: [
                     SButton(
                       text: 'Hire Me',
@@ -256,8 +257,8 @@ class _ProfilePictureState extends State<ProfilePicture>
     ]).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
 
     _rotateAnimation = Tween<double>(
-      begin: -0.1,
-      end: 0.1,
+      begin: 0,
+      end: 1,
     ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
   }
 
@@ -269,6 +270,7 @@ class _ProfilePictureState extends State<ProfilePicture>
 
   @override
   Widget build(BuildContext context) {
+    final angle = context.isDesktop ? -math.pi / .1 : -math.pi / 2;
     return VisibilityDetector(
       key: const Key('profile-picture'),
       onVisibilityChanged: (info) {
@@ -276,38 +278,94 @@ class _ProfilePictureState extends State<ProfilePicture>
           _controller.forward();
         }
       },
-      child: Row(
-        spacing: 10,
-        children: [
-          AnimatedBuilder(
-            animation: _controller,
-            builder: (context, child) {
-              return Transform.translate(
-                offset: Offset(0, _bounceAnimation.value),
-                child: child,
-              );
-            },
-            child: SvgPicture.asset(
-              'assets/images/profile.svg',
-              width: 78,
-              height: 78,
+      child: context.isDesktop
+          ? Row(
+              spacing: 10,
+              children: [
+                ProfileWidget(
+                  controller: _controller,
+                  bounceAnimation: _bounceAnimation,
+                ),
+                AnimatedBuilder(
+                  animation: _controller,
+                  builder: (context, child) {
+                    return Transform.rotate(
+                      angle: angle * _rotateAnimation.value,
+                      child: child,
+                    );
+                  },
+                  child: SvgPicture.asset('assets/icons/arrow.svg'),
+                ),
+                LandingNameWidget(),
+              ],
+            )
+          : Column(
+              spacing: 20,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ProfileWidget(
+                  controller: _controller,
+                  bounceAnimation: _bounceAnimation,
+                ),
+                AnimatedBuilder(
+                  animation: _controller,
+                  builder: (context, child) {
+                    return Transform.rotate(
+                      angle: angle * _rotateAnimation.value,
+                      child: child,
+                    );
+                  },
+                  child: SvgPicture.asset('assets/icons/arrow.svg'),
+                ),
+                LandingNameWidget(),
+              ],
             ),
-          ),
-          AnimatedBuilder(
-            animation: _controller,
-            builder: (context, child) {
-              return Transform.rotate(
-                angle: _rotateAnimation.value,
-                child: child,
-              );
-            },
-            child: SvgPicture.asset('assets/icons/arrow.svg'),
-          ),
-          Transform.rotate(
-            angle: -math.pi / 45,
-            child: HighlightText('Sahul\nhameed', height: 50),
-          ),
-        ],
+    );
+  }
+}
+
+class LandingNameWidget extends StatelessWidget {
+  const LandingNameWidget({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Transform.rotate(
+      angle: -math.pi / 45,
+      child: HighlightText('Sahul\nhameed', height: 50),
+    );
+  }
+}
+
+class ProfileWidget extends StatelessWidget {
+  const ProfileWidget({
+    super.key,
+    required AnimationController controller,
+    required Animation<double> bounceAnimation,
+  }) : _controller = controller,
+       _bounceAnimation = bounceAnimation;
+
+  final AnimationController _controller;
+  final Animation<double> _bounceAnimation;
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        return Transform.translate(
+          offset: Offset(0, _bounceAnimation.value),
+          child: child,
+        );
+      },
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(100),
+        child: Image.asset(
+          'assets/images/profile_pic.jpg',
+          width: 200,
+          height: 200,
+          fit: BoxFit.cover,
+        ),
       ),
     );
   }
