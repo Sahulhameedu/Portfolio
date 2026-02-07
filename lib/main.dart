@@ -1,6 +1,5 @@
 import 'package:emailjs/emailjs.dart' as emailjs;
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:portfolio/common/widgets/dotted_background_painter.dart';
 import 'package:portfolio/common/widgets/header.dart';
 import 'package:portfolio/common/widgets/high_light_text.dart';
@@ -17,13 +16,9 @@ import 'package:toastification/toastification.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await dotenv.load(fileName: ".env");
-  emailjs.init(
-    emailjs.Options(
-      publicKey: dotenv.env['EMAIL_PUBLIC_KEY'],
-      privateKey: dotenv.env['EMAIL_PRIVATE_KEY'],
-    ),
-  );
+  const publicKey = String.fromEnvironment('EMAIL_PUBLIC_KEY');
+  const privateKey = String.fromEnvironment('EMAIL_PRIVATE_KEY');
+  emailjs.init(emailjs.Options(publicKey: publicKey, privateKey: privateKey));
   runApp(const MyApp());
 }
 
