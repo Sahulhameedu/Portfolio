@@ -2,9 +2,11 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 import 'package:portfolio/common/widgets/button.dart';
 import 'package:portfolio/common/widgets/high_light_text.dart';
 import 'package:portfolio/core/constants/app_constants.dart';
+import 'package:portfolio/helper/download_manager.dart';
 import 'package:portfolio/helper/responsive.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
@@ -106,9 +108,28 @@ class _RightLandingSectionState extends State<RightLandingSection>
                     fontWeight: FontWeight.w400,
                   ),
                 ),
-                SButton(text: 'Hire Me', onTap: () {
-                  scrollToContact(widget.contactKey);
-                }),
+                Row(
+                  spacing: 20,
+                  children: [
+                    SButton(
+                      text: 'Hire Me',
+                      onTap: () {
+                        scrollToContact(widget.contactKey);
+                      },
+                    ),
+                    SButton(
+                      text: 'Download CV',
+                      icon: Icon(
+                        LucideIcons.downloadCloud,
+                        color: Colors.white,
+                      ),
+                      onTap: () async {
+                        await DownloadManager.downloadCV();
+                      },
+                      borderColor: Colors.white,
+                    ),
+                  ],
+                ),
               ],
             ),
           ),
