@@ -225,6 +225,7 @@ class _ContactDetailsState extends State<ContactDetails>
                       _emailController.clear();
                       _projectController.clear();
                     } catch (err) {
+                      debugPrint(err.toString());
                       if (mounted && context.mounted) {
                         ToastHelper.showError(
                           context,
