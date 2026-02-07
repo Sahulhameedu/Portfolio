@@ -141,6 +141,8 @@ class MainWidget extends StatelessWidget {
                       )
                     : const Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        spacing: 20,
+                        // runSpacing: 20,
                         children: [Logo(), Links()],
                       ),
               ),
@@ -174,14 +176,26 @@ class Links extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      spacing: 20,
-      children: [
-        LinkedInButton(),
-        GithubButton(),
-        EmailButton(),
-        PhoneButton(),
-      ],
+    return SizedBox(
+      width: context.isMobile
+          ? 200
+          : context.isTablet
+          ? 400
+          : 600,
+      child: Wrap(
+        spacing: 20,
+        runSpacing: 20,
+        crossAxisAlignment: WrapCrossAlignment.end,
+        alignment: WrapAlignment.end,
+        // mainAxisSize: MainAxisSize.min,
+        // runSpacing: 20,
+        children: [
+          LinkedInButton(),
+          GithubButton(),
+          EmailButton(),
+          PhoneButton(),
+        ],
+      ),
     );
   }
 }

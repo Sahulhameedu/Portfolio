@@ -10,7 +10,6 @@ import 'package:portfolio/core/constants/app_colors.dart';
 import 'package:portfolio/helper/email_sender.dart';
 import 'package:portfolio/helper/responsive.dart';
 import 'package:portfolio/helper/toast_helper.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
 class ContactSection extends StatelessWidget {

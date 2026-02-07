@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:portfolio/common/widgets/high_light_text.dart';
 import 'package:portfolio/core/constants/app_constants.dart';
 import 'package:portfolio/helper/responsive.dart';
 import 'package:portfolio/main.dart';
