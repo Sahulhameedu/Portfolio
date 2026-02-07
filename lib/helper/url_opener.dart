@@ -24,4 +24,9 @@ class UrlOpenHelper {
     final Uri uri = Uri.parse(url);
     await launchUrl(uri, mode: LaunchMode.externalApplication);
   }
+
+  static Future<void> phoneCall({required String phoneNumber}) async {
+    final Uri uri = Uri.parse('tel:$phoneNumber');
+    await launchUrl(uri, mode: LaunchMode.externalApplication);
+  }
 }

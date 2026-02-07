@@ -11,6 +11,7 @@ class HighlightText extends StatelessWidget {
   final Color color;
   final bool isShowBorder;
   final Color textColor;
+  final bool isSelectedText;
 
   const HighlightText(
     this.text, {
@@ -22,6 +23,7 @@ class HighlightText extends StatelessWidget {
     this.color = AppColors.pink,
     this.isShowBorder = false,
     this.textColor = Colors.black,
+    this.isSelectedText = false,
   });
 
   @override
@@ -45,15 +47,26 @@ class HighlightText extends StatelessWidget {
         ),
 
         // Text
-        Text(
-          text,
-          style: TextStyle(
-            fontFamily: fontFamily,
-            fontSize: fontSize,
-            fontWeight: fontWeight,
-            color: textColor,
+        if (isSelectedText)
+          SelectableText(
+            text,
+            style: TextStyle(
+              fontFamily: fontFamily,
+              fontSize: fontSize,
+              fontWeight: fontWeight,
+              color: textColor,
+            ),
+          )
+        else
+          Text(
+            text,
+            style: TextStyle(
+              fontFamily: fontFamily,
+              fontSize: fontSize,
+              fontWeight: fontWeight,
+              color: textColor,
+            ),
           ),
-        ),
       ],
     );
   }

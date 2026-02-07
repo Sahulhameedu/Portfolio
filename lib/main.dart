@@ -1,4 +1,6 @@
+import 'package:emailjs/emailjs.dart' as emailjs;
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:portfolio/common/widgets/dotted_background_painter.dart';
 import 'package:portfolio/common/widgets/header.dart';
 import 'package:portfolio/common/widgets/high_light_text.dart';
@@ -11,8 +13,17 @@ import 'package:portfolio/section/landing_section.dart';
 import 'package:portfolio/section/project_section.dart';
 import 'package:portfolio/section/skill_section.dart';
 import 'package:portfolio/section/tool_section.dart';
+import 'package:toastification/toastification.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await dotenv.load(fileName: ".env");
+  emailjs.init(
+    emailjs.Options(
+      publicKey: dotenv.env['EMAIL_PUBLIC_KEY'],
+      privateKey: dotenv.env['EMAIL_PRIVATE_KEY'],
+    ),
+  );
   runApp(const MyApp());
 }
 
@@ -21,10 +32,12 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Portfolio',
-      debugShowCheckedModeBanner: false,
-      home: const MainWidget(),
+    return ToastificationWrapper(
+      child: MaterialApp(
+        title: 'Portfolio',
+        debugShowCheckedModeBanner: false,
+        home: const MainWidget(),
+      ),
     );
   }
 }
@@ -161,7 +174,15 @@ class Links extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(spacing: 20, children: [LinkedInButton(), GithubButton()]);
+    return Row(
+      spacing: 20,
+      children: [
+        LinkedInButton(),
+        GithubButton(),
+        EmailButton(),
+        PhoneButton(),
+      ],
+    );
   }
 }
 
@@ -216,6 +237,72 @@ class LinkedInButton extends StatelessWidget {
           Image.asset('assets/icons/linkedin.png', width: 25, height: 25),
           HighlightText(
             'LinkedIn',
+            fontSize: 18,
+            height: 20,
+            fontWeight: FontWeight.w500,
+            fontFamily: AppConstants.handlee,
+            color: Colors.black,
+            textColor: Colors.white,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class EmailButton extends StatelessWidget {
+  const EmailButton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: () {
+        UrlOpenHelper.openUrl(
+          url: 'mailto:hameedsahul046@gmail.com',
+        ).catchError((error) {});
+      },
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.email, size: 25),
+          HighlightText(
+            isSelectedText: true,
+            'hameedsahul046@gmail.com',
+            fontSize: 18,
+            height: 20,
+            fontWeight: FontWeight.w500,
+            fontFamily: AppConstants.handlee,
+            color: Colors.black,
+            textColor: Colors.white,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class PhoneButton extends StatelessWidget {
+  const PhoneButton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: () {
+        UrlOpenHelper.openUrl(url: 'tel:+919489551531').catchError((error) {
+          debugPrint(error.toString());
+        });
+      },
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.phone, size: 25),
+          HighlightText(
+            isSelectedText: true,
+            '+91 9489551531',
             fontSize: 18,
             height: 20,
             fontWeight: FontWeight.w500,

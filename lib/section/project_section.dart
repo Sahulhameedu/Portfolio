@@ -78,11 +78,16 @@ class _ProjectSectionState extends State<ProjectSection>
     for (int i = 0; i < 5; i++) {
       final delay = i * 0.12; // Stagger delay
 
+      // Calculate end points and clamp to 1.0
+      final fadeEnd = (0.5 + delay).clamp(0.0, 1.0);
+      final scaleEnd = (0.6 + delay).clamp(0.0, 1.0);
+      final slideEnd = (0.5 + delay).clamp(0.0, 1.0);
+
       _projectFadeAnimations.add(
         Tween<double>(begin: 0.0, end: 1.0).animate(
           CurvedAnimation(
             parent: _projectsController,
-            curve: Interval(delay, 0.5 + delay, curve: Curves.easeOut),
+            curve: Interval(delay, fadeEnd, curve: Curves.easeOut),
           ),
         ),
       );
@@ -91,7 +96,7 @@ class _ProjectSectionState extends State<ProjectSection>
         Tween<double>(begin: 0.85, end: 1.0).animate(
           CurvedAnimation(
             parent: _projectsController,
-            curve: Interval(delay, 0.6 + delay, curve: Curves.easeOutBack),
+            curve: Interval(delay, scaleEnd, curve: Curves.easeOutBack),
           ),
         ),
       );
@@ -100,7 +105,7 @@ class _ProjectSectionState extends State<ProjectSection>
         Tween<Offset>(begin: const Offset(0, 0.4), end: Offset.zero).animate(
           CurvedAnimation(
             parent: _projectsController,
-            curve: Interval(delay, 0.5 + delay, curve: Curves.easeOut),
+            curve: Interval(delay, slideEnd, curve: Curves.easeOut),
           ),
         ),
       );
@@ -144,7 +149,9 @@ class _ProjectSectionState extends State<ProjectSection>
                   return Transform.rotate(
                     angle: -math.pi / 2 * _arrowRotateAnimation.value,
                     child: Opacity(
-                      opacity: _arrowRotateAnimation.value.clamp(0, 1).toDouble(),
+                      opacity: _arrowRotateAnimation.value
+                          .clamp(0, 1)
+                          .toDouble(),
                       child: SvgPicture.asset(
                         'assets/icons/arrow.svg',
                         width: 27,

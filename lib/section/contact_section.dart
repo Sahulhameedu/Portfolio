@@ -2,11 +2,14 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:intl/intl.dart';
 import 'package:portfolio/common/widgets/button.dart';
 import 'package:portfolio/common/widgets/high_light_text.dart';
 import 'package:portfolio/common/widgets/label_underline_text_field.dart';
 import 'package:portfolio/core/constants/app_colors.dart';
+import 'package:portfolio/helper/email_sender.dart';
 import 'package:portfolio/helper/responsive.dart';
+import 'package:portfolio/helper/toast_helper.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
@@ -47,12 +50,12 @@ class _ContactDetailsState extends State<ContactDetails>
   final List<Animation<double>> _fadeAnimations = [];
   final List<Animation<Offset>> _slideAnimations = [];
   final List<Animation<double>> _scaleAnimations = [];
-  final nameController = TextEditingController();
-  final emailController = TextEditingController();
-  final projectController = TextEditingController();
+  final _nameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _projectController = TextEditingController();
   String? nameError;
   String? emailError;
-
+  String? messageError;
   @override
   void initState() {
     super.initState();
@@ -97,9 +100,9 @@ class _ContactDetailsState extends State<ContactDetails>
   @override
   void dispose() {
     _controller.dispose();
-    nameController.dispose();
-    emailController.dispose();
-    projectController.dispose();
+    _nameController.dispose();
+    _emailController.dispose();
+    _projectController.dispose();
     super.dispose();
   }
 
@@ -123,7 +126,7 @@ class _ContactDetailsState extends State<ContactDetails>
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   LabeledUnderlineTextField(
-                    controller: nameController,
+                    controller: _nameController,
                     hint: '',
                     label: 'Name',
                     labelColor: AppColors.lightPink,
@@ -150,7 +153,7 @@ class _ContactDetailsState extends State<ContactDetails>
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   LabeledUnderlineTextField(
-                    controller: emailController,
+                    controller: _emailController,
                     hint: '',
                     label: 'Your Email',
                     labelColor: AppColors.lightOrange,
@@ -173,11 +176,28 @@ class _ContactDetailsState extends State<ContactDetails>
             SizedBox(height: 20),
             _buildAnimatedField(
               index: 2,
-              child: LabeledUnderlineTextField(
-                controller: projectController,
-                hint: '',
-                label: 'About Project',
-                labelColor: AppColors.lightBlue,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  LabeledUnderlineTextField(
+                    controller: _projectController,
+                    hint: '',
+                    label: 'About Project',
+                    labelColor: AppColors.lightBlue,
+                  ),
+                  if (messageError != null)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8.0, left: 75),
+                      child: Text(
+                        messageError!,
+                        style: const TextStyle(
+                          color: Colors.red,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                ],
               ),
             ),
             SizedBox(height: 20),
@@ -185,13 +205,34 @@ class _ContactDetailsState extends State<ContactDetails>
               index: 3,
               child: SButton(
                 text: 'Send Here',
-                onTap: () {
+                onTap: () async {
                   if (_validateForm()) {
-                    sendEmail(
-                      name: nameController.text,
-                      email: emailController.text,
-                      message: projectController.text,
-                    );
+                    try {
+                      await EmailSender.sendEmail({
+                        'name': _nameController.text.trim(),
+                        'email': _emailController.text.trim(),
+                        'message': _projectController.text.trim(),
+                        'time': DateFormat(
+                          'yyyy-MM-dd HH:mm:ss',
+                        ).format(DateTime.now()),
+                      });
+                      if (mounted && context.mounted) {
+                        ToastHelper.showSuccess(
+                          context,
+                          '👋 Email sent—let’s connect soon.',
+                        );
+                      }
+                      _nameController.clear();
+                      _emailController.clear();
+                      _projectController.clear();
+                    } catch (err) {
+                      if (mounted && context.mounted) {
+                        ToastHelper.showError(
+                          context,
+                          'Something went wrong, try again please',
+                        );
+                      }
+                    }
                   }
                 },
               ),
@@ -208,15 +249,16 @@ class _ContactDetailsState extends State<ContactDetails>
     setState(() {
       nameError = null;
       emailError = null;
+      messageError = null;
     });
 
     // Validate name
-    if (nameController.text.trim().isEmpty) {
+    if (_nameController.text.trim().isEmpty) {
       setState(() {
         nameError = 'Name is required';
       });
       isValid = false;
-    } else if (nameController.text.trim().length < 2) {
+    } else if (_nameController.text.trim().length < 2) {
       setState(() {
         nameError = 'Name must be at least 2 characters';
       });
@@ -224,14 +266,22 @@ class _ContactDetailsState extends State<ContactDetails>
     }
 
     // Validate email
-    if (emailController.text.trim().isEmpty) {
+    if (_emailController.text.trim().isEmpty) {
       setState(() {
         emailError = 'Email is required';
       });
       isValid = false;
-    } else if (!_isValidEmail(emailController.text.trim())) {
+    } else if (!_isValidEmail(_emailController.text.trim())) {
       setState(() {
         emailError = 'Please enter a valid email';
+      });
+      isValid = false;
+    }
+
+    // Validate message/project
+    if (_projectController.text.trim().isEmpty) {
+      setState(() {
+        messageError = 'Project details are required';
       });
       isValid = false;
     }
@@ -366,21 +416,21 @@ class _ContactTitleState extends State<ContactTitle>
   }
 }
 
-Future<void> sendEmail({
-  required String name,
-  required String email,
-  required String message,
-}) async {
-  final Uri uri = Uri(
-    scheme: 'mailto',
-    path: 'hameedsahul046@gmail.com',
-    query: Uri.encodeFull(
-      'subject=Portfolio Contact from $name'
-      '&body=Name: $name\nEmail: $email\nMessage:\n$message',
-    ),
-  );
+// Future<void> sendEmail({
+//   required String name,
+//   required String email,
+//   required String message,
+// }) async {
+//   final Uri uri = Uri(
+//     scheme: 'mailto',
+//     path: 'hameedsahul046@gmail.com',
+//     query: Uri.encodeFull(
+//       'subject=Portfolio Contact from $name'
+//       '&body=Name: $name\nEmail: $email\nMessage:\n$message',
+//     ),
+//   );
 
-  if (await canLaunchUrl(uri)) {
-    await launchUrl(uri);
-  }
-}
+//   if (await canLaunchUrl(uri)) {
+//     await launchUrl(uri);
+//   }
+// }
