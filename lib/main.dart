@@ -16,9 +16,6 @@ import 'package:toastification/toastification.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // const publicKey = String.fromEnvironment('EMAIL_PUBLIC_KEY');
-  // const privateKey = String.fromEnvironment('EMAIL_PRIVATE_KEY');
-  // emailjs.init(emailjs.Options(publicKey: publicKey, privateKey: privateKey));
   runApp(const MyApp());
 }
 
