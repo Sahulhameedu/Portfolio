@@ -1,4 +1,4 @@
-import 'package:emailjs/emailjs.dart' as emailjs;
+import 'package:dio/dio.dart';
 
 class EmailSender {
   static Future<void> sendEmail(Map<String, dynamic> data) async {
@@ -13,8 +13,16 @@ class EmailSender {
       'EMAIL_TEMPLATE_ID',
       defaultValue: 'test_temp',
     );
-    print('Email Service Id: $emailSeriveId');
-    print('Email Template Id: $emailTemplateId');
-    await emailjs.send(emailSeriveId, emailTemplateId, data);
+    const publicKey = String.fromEnvironment('EMAIL_PUBLIC_KEY');
+    const privateKey = String.fromEnvironment('EMAIL_PRIVATE_KEY');
+    final dio = Dio();
+    final Map<String, dynamic> req = {
+      "service_id": emailSeriveId,
+      "template_id": emailTemplateId,
+      "user_id": publicKey,
+      "template_params": data,
+      "accessToken": privateKey,
+    };
+    await dio.post('https://api.emailjs.com/api/v1.0/email/send', data: req);
   }
 }
